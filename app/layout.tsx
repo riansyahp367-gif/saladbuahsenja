@@ -1,66 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const poppins = Poppins({
   subsets: ["latin"],
+  weight: ["300","400","500","600","700"],
+  variable: "--font-poppins",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const playfair = Playfair_Display({
   subsets: ["latin"],
+  weight: ["600","700","800"],
+  variable: "--font-playfair",
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://saladbuahsenja.vercel.app"),
-
-  title: {
-    default: "Salad Buah Senja | Salad Buah Premium di Palembang",
-    template: "%s | Salad Buah Senja",
-  },
-
-  description:
-    "Salad Buah Senja menyediakan salad buah premium dengan buah segar pilihan, saus creamy premium, dan harga terjangkau. Tersedia 4 cabang di Palembang.",
-
-  keywords: [
-    "salad buah",
-    "salad buah palembang",
-    "salad buah senja",
-    "salad buah premium",
-    "salad buah enak",
-    "salad buah murah",
-    "salad buah creamy",
-    "dessert palembang",
-    "makanan sehat palembang",
-  ],
-
-  authors: [
-    {
-      name: "Salad Buah Senja",
-    },
-  ],
-
-  creator: "Salad Buah Senja",
-
-  openGraph: {
-    title: "Salad Buah Senja",
-    description:
-      "Salad buah premium dengan buah segar pilihan dan saus creamy premium. Tersedia 4 cabang di Palembang.",
-    url: "https://saladbuahsenja.vercel.app",
-    siteName: "Salad Buah Senja",
-    locale: "id_ID",
-    type: "website",
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-  },
-
-  icons: {
-    icon: "/favicon.ico",
-  },
+  title: "Salad Buah Senja",
+  description: "Fresh Every Day",
 };
 
 export default function RootLayout({
@@ -69,11 +25,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="id"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-pink-50 text-gray-900">
+    <html lang="id">
+      <body
+        className={`${poppins.variable} ${playfair.variable} font-sans bg-pink-50`}
+      >
         {children}
       </body>
     </html>

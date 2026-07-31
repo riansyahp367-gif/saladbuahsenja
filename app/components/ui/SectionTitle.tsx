@@ -1,23 +1,40 @@
 type SectionTitleProps = {
+  badge?: string;
   title: string;
-  subtitle?: string;
+  highlight?: string;
+  description?: string;
 };
 
 export default function SectionTitle({
+  badge,
   title,
-  subtitle,
+  highlight,
+  description,
 }: SectionTitleProps) {
   return (
-    <div className="mb-12 text-center">
-      {subtitle && (
-        <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-pink-500">
-          {subtitle}
+    <div className="mx-auto mb-14 max-w-3xl text-center">
+
+      {badge && (
+        <span className="inline-flex rounded-full bg-pink-100 px-4 py-2 text-sm font-semibold text-pink-600">
+          {badge}
+        </span>
+      )}
+
+      <h2 className="mt-6 text-4xl font-extrabold text-gray-900 lg:text-5xl">
+        {title}{" "}
+        {highlight && (
+          <span className="text-pink-600">
+            {highlight}
+          </span>
+        )}
+      </h2>
+
+      {description && (
+        <p className="mt-5 text-lg leading-8 text-gray-600">
+          {description}
         </p>
       )}
 
-      <h2 className="text-3xl font-bold text-gray-900 md:text-4xl">
-        {title}
-      </h2>
     </div>
   );
 }

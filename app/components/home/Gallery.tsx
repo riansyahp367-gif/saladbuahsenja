@@ -7,12 +7,11 @@ const images = [
   "/images/hero-premium.jpg",
   "/images/hero-premium.jpg",
   "/images/hero-premium.jpg",
-  "/images/hero-premium.jpg",
 ];
 
 export default function Gallery() {
   return (
-    <section id="gallery" className="bg-white py-24">
+    <section id="gallery" className="bg-gradient-to-b from-white to-pink-50 py-24">
       <Container>
 
         <div className="text-center">
@@ -22,29 +21,41 @@ export default function Gallery() {
           </span>
 
           <h2 className="mt-6 text-4xl font-bold text-gray-900">
-            Salad Buah Yang Menggugah Selera
+            Fresh, Cantik, dan Menggugah Selera
           </h2>
 
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-500">
-            Dibuat dari buah segar pilihan dengan saus premium dan keju
-            melimpah di setiap cup.
+            Setiap porsi dibuat dari buah pilihan dengan saus creamy premium
+            dan keju melimpah agar setiap gigitan terasa istimewa.
           </p>
 
         </div>
 
-        <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-16 grid gap-6 lg:grid-cols-3">
 
-          {images.map((image, index) => (
+          {/* Foto Besar */}
+          <div className="group overflow-hidden rounded-[32px] shadow-xl lg:col-span-2 lg:row-span-2">
+            <Image
+              src={images[0]}
+              alt="Salad Buah Senja"
+              width={900}
+              height={900}
+              className="h-full min-h-[620px] w-full object-cover transition duration-700 group-hover:scale-110"
+            />
+          </div>
+
+          {/* Foto kecil */}
+          {images.slice(1).map((image, index) => (
             <div
               key={index}
-              className="group overflow-hidden rounded-3xl shadow-lg"
+              className="group overflow-hidden rounded-[28px] shadow-lg"
             >
               <Image
                 src={image}
-                alt={`Gallery ${index + 1}`}
+                alt={`Gallery ${index + 2}`}
                 width={600}
                 height={600}
-                className="h-72 w-full object-cover transition duration-500 group-hover:scale-110"
+                className="h-72 w-full object-cover transition duration-700 group-hover:scale-110"
               />
             </div>
           ))}
