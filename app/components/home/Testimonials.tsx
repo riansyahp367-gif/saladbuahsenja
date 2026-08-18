@@ -1,90 +1,68 @@
 import Container from "../ui/Container";
-import { Star } from "lucide-react";
+import SectionTitle from "../ui/SectionTitle";
 
 const testimonials = [
   {
-    name: "Ayu Rahma",
-    city: "Palembang",
-    text: "Saladnya segar banget, buahnya manis dan sausnya creamy. Sekarang jadi langganan keluarga.",
+    name: "Nabila",
+    role: "Mahasiswi",
+    text: "Buahnya fresh banget, sausnya creamy dan kejunya melimpah. Sekarang jadi langganan tiap minggu.",
+    rating: "★★★★★",
   },
   {
-    name: "Rina Putri",
-    city: "Palembang",
-    text: "Pengirimannya cepat, packing rapi, dan kejunya melimpah. Recommended banget!",
+    name: "Andi",
+    role: "Karyawan",
+    text: "Porsinya pas, rasanya premium, harganya masih ramah di kantong. Recommended banget.",
+    rating: "★★★★★",
   },
   {
-    name: "Dewi Lestari",
-    city: "Palembang",
-    text: "Harganya ramah di kantong tapi kualitasnya premium. Rasanya selalu konsisten setiap order.",
+    name: "Rina",
+    role: "Ibu Rumah Tangga",
+    text: "Anak-anak di rumah suka sekali. Pengiriman cepat dan salad selalu datang dalam keadaan segar.",
+    rating: "★★★★★",
   },
 ];
 
 export default function Testimonials() {
   return (
-    <section className="bg-gradient-to-b from-pink-50 to-white py-24">
+    <section className="bg-white py-24">
       <Container>
-        <div className="text-center">
 
-          <span className="rounded-full bg-pink-100 px-5 py-2 text-sm font-semibold text-pink-600">
-            ❤️ Testimoni Pelanggan
-          </span>
+        <SectionTitle
+          badge="💖 Testimoni"
+          title="Apa Kata"
+          highlight="Pelanggan Kami?"
+          description="Kepuasan pelanggan selalu menjadi prioritas utama Salad Buah Senja."
+        />
 
-          <h2 className="mt-6 text-4xl font-bold text-gray-900">
-            Apa Kata Pelanggan Kami?
-          </h2>
-
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-500">
-            Kepuasan pelanggan adalah prioritas kami. Terima kasih atas
-            kepercayaan yang telah diberikan kepada Salad Buah Senja.
-          </p>
-
-        </div>
-
-        <div className="mt-16 grid gap-8 md:grid-cols-3">
+        <div className="grid gap-8 lg:grid-cols-3">
 
           {testimonials.map((item) => (
             <div
               key={item.name}
-              className="group rounded-[30px] border border-pink-100 bg-white p-8 shadow-md transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl"
+              className="rounded-3xl border border-pink-100 bg-pink-50 p-8 shadow-lg transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl"
             >
+              <p className="text-xl text-yellow-500">
+                {item.rating}
+              </p>
 
-              {/* Rating */}
-              <div className="flex gap-1 text-yellow-400">
-                <Star fill="currentColor" size={18} />
-                <Star fill="currentColor" size={18} />
-                <Star fill="currentColor" size={18} />
-                <Star fill="currentColor" size={18} />
-                <Star fill="currentColor" size={18} />
-              </div>
-
-              {/* Isi */}
-              <p className="mt-6 leading-8 text-gray-600 italic">
+              <p className="mt-5 leading-8 text-gray-600">
                 "{item.text}"
               </p>
 
-              {/* Profil */}
-              <div className="mt-8 flex items-center gap-4">
+              <div className="mt-8">
+                <h3 className="font-bold text-gray-900">
+                  {item.name}
+                </h3>
 
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-pink-100 text-xl font-bold text-pink-600 transition duration-500 group-hover:bg-pink-600 group-hover:text-white">
-                  {item.name.charAt(0)}
-                </div>
-
-                <div>
-                  <h3 className="font-bold text-gray-900">
-                    {item.name}
-                  </h3>
-
-                  <p className="text-sm text-pink-600">
-                    📍 {item.city}
-                  </p>
-                </div>
-
+                <p className="text-sm text-gray-500">
+                  {item.role}
+                </p>
               </div>
-
             </div>
           ))}
 
         </div>
+
       </Container>
     </section>
   );

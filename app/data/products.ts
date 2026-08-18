@@ -24,7 +24,7 @@ export const products = [
         price: 15000,
         points: 15,
         package: "Cup Jumbo",
-        image: "/images/products/original-300.jpg",
+        image: "/images/products/original-200.jpg",
       },
       {
         id: "500",
@@ -33,7 +33,7 @@ export const products = [
         price: 20000,
         points: 20,
         package: "Thinwall Premium",
-        image: "/images/products/original-500.jpg",
+        image: "/images/products/original-200.jpg",
       },
     ],
   },
@@ -63,7 +63,7 @@ export const products = [
         price: 15000,
         points: 15,
         package: "Cup Jumbo",
-        image: "/images/products/mangga-300.jpg",
+        image: "/images/products/mangga-200.jpg",
       },
       {
         id: "500",
@@ -72,7 +72,7 @@ export const products = [
         price: 20000,
         points: 20,
         package: "Thinwall Premium",
-        image: "/images/products/mangga-500.jpg",
+        image: "/images/products/mangga-200.jpg",
       },
     ],
   },
@@ -102,7 +102,7 @@ export const products = [
         price: 15000,
         points: 15,
         package: "Cup Jumbo",
-        image: "/images/products/strawberry-300.jpg",
+        image: "/images/products/strawberry-200.jpg",
       },
       {
         id: "500",
@@ -111,7 +111,91 @@ export const products = [
         price: 20000,
         points: 20,
         package: "Thinwall Premium",
-        image: "/images/products/strawberry-500.jpg",
+        image: "/images/products/strawberry-200.jpg",
+      },
+    ],
+  },
+
+  {
+    id: "oreo-cheesecake",
+    name: "Oreo Cheesecake",
+    badge: "🍪 Best Seller",
+    theme: "dark",
+    rating: 4.9,
+    description:
+      "Dessert lembut dengan cream cheese premium dan taburan Oreo melimpah yang lumer di mulut.",
+    sizes: [
+      {
+        id: "regular",
+        label: "Cup",
+        volume: "180 ml",
+        price: 10000,
+        points: 10,
+        package: "Cup Premium",
+        image: "/images/products/oreo-cheesecake.jpg",
+      },
+    ],
+  },
+
+  {
+    id: "red-velvet",
+    name: "Red Velvet Cheesecake",
+    badge: "❤️ New Favorite",
+    theme: "red",
+    rating: 4.9,
+    description:
+      "Perpaduan red velvet lembut dengan cream cheese premium yang manis dan creamy.",
+    sizes: [
+      {
+        id: "regular",
+        label: "Cup",
+        volume: "180 ml",
+        price: 10000,
+        points: 10,
+        package: "Cup Premium",
+        image: "/images/products/red-velvet.jpg",
+      },
+    ],
+  },
+
+  {
+    id: "regal-cheesecake",
+    name: "Regal Cheesecake",
+    badge: "🍰 Classic Favorite",
+    theme: "cream",
+    rating: 4.9,
+    description:
+      "Dessert creamy dengan perpaduan biskuit Regal yang lembut, gurih, dan manis di setiap lapisan.",
+    sizes: [
+      {
+        id: "regular",
+        label: "Cup",
+        volume: "180 ml",
+        price: 10000,
+        points: 10,
+        package: "Cup Premium",
+        image: "/images/products/regal-cheesecake.jpg",
+      },
+    ],
+  },
+
+  {
+    id: "fruit-sandwich",
+    name: "Fruit Sandwich",
+    badge: "🥪 Premium",
+    theme: "cream",
+    rating: 5.0,
+    description:
+      "Roti susu super lembut dengan whipped cream premium dan stroberi segar pilihan.",
+    sizes: [
+      {
+        id: "regular",
+        label: "1 Box",
+        volume: "3 Slice",
+        price: 10000,
+        points: 10,
+        package: "Box Premium",
+        image: "/images/products/fruit-sandwich.jpg",
       },
     ],
   },

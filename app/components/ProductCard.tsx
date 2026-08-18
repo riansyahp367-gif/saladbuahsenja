@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Star, Gift, Package } from "lucide-react";
+import { Star, Gift, Package, Sparkles, Clock3 } from "lucide-react";
 
 import ProductSizeSelector from "./product/ProductSizeSelector";
 import WhatsAppButton from "./product/WhatsAppButton";
@@ -47,20 +47,29 @@ export default function ProductCard({
   return (
     <div className="overflow-hidden rounded-3xl border border-pink-100 bg-white shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
 
-      {/* Image */}
-      <div className="relative h-72 bg-pink-50">
-        <Image
-          src={selected.image}
-          alt={product.name}
-          fill
-          className="object-cover transition duration-500 hover:scale-105"
-        />
+     {/* Image */}
+<div className="relative h-[340px] overflow-hidden bg-gradient-to-b from-pink-50 via-white to-pink-100">
 
-        <span className="absolute left-4 top-4 rounded-full bg-pink-600 px-4 py-2 text-sm font-semibold text-white shadow-lg">
-          {product.badge}
-        </span>
-      </div>
+  <Image
+    src={selected.image}
+    alt={product.name}
+    fill
+    className="object-cover transition-all duration-700 hover:scale-110"
+  />
 
+  {/* Badge */}
+  <div className="absolute left-5 top-5 rounded-full bg-white/90 px-4 py-2 shadow-xl backdrop-blur-md">
+    <p className="text-sm font-bold text-pink-600">
+      {product.badge}
+    </p>
+  </div>
+
+  {/* Best Seller */}
+  <div className="absolute right-5 top-5 rounded-full bg-pink-600 px-4 py-2 text-xs font-bold text-white shadow-lg">
+    BEST SELLER
+  </div>
+
+</div>
       {/* Content */}
       <div className="p-6">
 
@@ -140,29 +149,39 @@ export default function ProductCard({
 
         </div>
 
-        {/* Price */}
-        <div className="mt-6">
+       {/* Price */}
+<div className="mt-6 rounded-3xl bg-gradient-to-r from-pink-500 via-pink-600 to-pink-500 p-5 text-white shadow-xl">
 
-          <p className="text-sm text-gray-500">
-            Harga
-          </p>
+  <p className="text-sm font-medium text-pink-100">
+    Mulai dari
+  </p>
 
-          <h4 className="text-3xl font-extrabold text-pink-600">
-            {formatPrice(selected.price)}
-          </h4>
+  <h4 className="mt-2 text-4xl font-black tracking-tight">
+    {formatPrice(selected.price)}
+  </h4>
 
-        </div>
+</div>
 
-        {/* WhatsApp */}
-        <div className="mt-6">
-          <WhatsAppButton
-            productName={product.name}
-            size={`${selected.label} (${selected.volume})`}
-          />
-        </div>
+       {/* WhatsApp */}
+<div className="mt-8 space-y-3">
 
-      </div>
+  <div className="flex items-center justify-center gap-2 rounded-2xl bg-green-50 py-3 text-sm font-semibold text-green-700">
 
-    </div>
+    <Clock3 size={18} />
+
+    <span>Dibuat Fresh Setiap Hari</span>
+
+  </div>
+
+  <WhatsAppButton
+    productName={product.name}
+    size={`${selected.label} (${selected.volume})`}
+  />
+
+</div>
+
+</div>
+
+</div>
   );
 }

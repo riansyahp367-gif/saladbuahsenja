@@ -1,81 +1,51 @@
 import ProductCard from "../ProductCard";
-
-const products = [
-  {
-    title: "Salad Original",
-    flavor: "Original",
-    size: "200 ml",
-    price: "Rp 10.000",
-    image: "/images/hero-premium.jpg",
-    badge: "Best Seller",
-  },
-  {
-    title: "Salad Original",
-    flavor: "Original",
-    size: "300 ml",
-    price: "Rp 15.000",
-    image: "/images/hero-premium.jpg",
-  },
-  {
-    title: "Salad Original",
-    flavor: "Original",
-    size: "500 ml",
-    price: "Rp 25.000",
-    image: "/images/hero-premium.jpg",
-  },
-  {
-    title: "Salad Mangga Mayo",
-    flavor: "Mangga Mayo",
-    size: "200 ml",
-    price: "Rp 10.000",
-    image: "/images/hero-premium.jpg",
-  },
-  {
-    title: "Salad Mangga Mayo",
-    flavor: "Mangga Mayo",
-    size: "300 ml",
-    price: "Rp 15.000",
-    image: "/images/hero-premium.jpg",
-  },
-  {
-    title: "Salad Mangga Mayo",
-    flavor: "Mangga Mayo",
-    size: "500 ml",
-    price: "Rp 25.000",
-    image: "/images/hero-premium.jpg",
-  },
-  {
-    title: "Salad Strawberry Mayo",
-    flavor: "Strawberry Mayo",
-    size: "200 ml",
-    price: "Rp 10.000",
-    image: "/images/hero-premium.jpg",
-    badge: "Favorit",
-  },
-  {
-    title: "Salad Strawberry Mayo",
-    flavor: "Strawberry Mayo",
-    size: "300 ml",
-    price: "Rp 15.000",
-    image: "/images/hero-premium.jpg",
-  },
-  {
-    title: "Salad Strawberry Mayo",
-    flavor: "Strawberry Mayo",
-    size: "500 ml",
-    price: "Rp 25.000",
-    image: "/images/hero-premium.jpg",
-  },
-];
+import { products } from "../../data/products";
 
 export default function MenuGrid() {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-16">
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {products.map((product, index) => (
-          <ProductCard key={index} {...product} />
-        ))}
+    <section
+      id="menu"
+      className="bg-white py-16"
+    >
+
+      <div className="mx-auto max-w-7xl px-6">
+
+        <div className="mb-12 text-center">
+
+          <span className="inline-flex rounded-full bg-pink-100 px-5 py-2 text-sm font-semibold text-pink-600">
+            🍓 Menu Favorit
+          </span>
+
+          <h2 className="mt-5 text-4xl font-black text-gray-900 md:text-5xl">
+            Salad Premium{" "}
+            <span className="text-pink-600">
+              Pilihan
+            </span>
+          </h2>
+
+          <p className="mx-auto mt-4 max-w-2xl text-gray-500">
+            Nikmati berbagai pilihan menu Salad Buah Senja
+            dengan buah segar, saus creamy premium, dan
+            rasa yang bikin nagih.
+          </p>
+
+        </div>
+
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+
+          {products.map((product) => (
+
+            <ProductCard
+              key={product.id}
+              product={product}
+            />
+
+          ))}
+
+        </div>
+
       </div>
+
     </section>
   );
 }
