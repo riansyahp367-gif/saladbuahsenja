@@ -15,65 +15,67 @@ const menus = [
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 30);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 30);
+    };
 
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", handleScroll);
 
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+      className={`fixed left-0 right-0 top-0 z-[100] transition-all duration-300 ${
         scrolled
-          ? "bg-white/80 backdrop-blur-xl shadow-lg border-b border-pink-100"
-          : "bg-transparent"
+          ? "border-b border-pink-100 bg-white/95 shadow-md backdrop-blur-xl"
+          : "border-b border-pink-100/50 bg-white/90 backdrop-blur-md"
       }`}
     >
-      <Container className="flex h-20 items-center justify-between">
+      <Container className="flex h-[76px] items-center justify-between">
 
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
-
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-pink-500 to-pink-600 text-2xl shadow-xl transition duration-300 group-hover:scale-105">
+        {/* LOGO */}
+        <Link
+          href="/"
+          onClick={() => setOpen(false)}
+          className="group flex items-center gap-3"
+        >
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500 to-pink-600 text-xl shadow-md transition duration-300 group-hover:scale-105">
             🍓
           </div>
 
-          <div>
-            <h1 className="text-xl font-black tracking-tight text-gray-900">
+          <div className="leading-none">
+            <div className="text-lg font-black tracking-tight text-gray-900">
               Salad Buah
-            </h1>
+            </div>
 
-            <p className="-mt-1 text-sm font-semibold tracking-wide text-pink-600">
+            <div className="mt-1 text-[11px] font-bold tracking-[0.2em] text-pink-600">
               SENJA
-            </p>
+            </div>
           </div>
-
         </Link>
 
-        {/* Menu Desktop */}
-        <nav className="hidden lg:flex items-center gap-10">
-
+        {/* MENU DESKTOP */}
+        <nav className="hidden items-center gap-8 lg:flex">
           {menus.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className="text-[15px] font-semibold text-gray-700 transition-all duration-300 hover:text-pink-600 hover:-translate-y-0.5"
+              className="text-sm font-semibold text-gray-700 transition duration-200 hover:text-pink-600"
             >
               {item.name}
             </Link>
           ))}
-
         </nav>
 
-        {/* Action */}
-        <div className="hidden lg:flex items-center gap-3">
-
+        {/* ACTION DESKTOP */}
+        <div className="hidden items-center gap-3 lg:flex">
           <Link
             href="/member/register"
-            className="rounded-2xl border border-pink-200 px-5 py-3 font-semibold text-pink-600 transition hover:bg-pink-50"
+            className="rounded-xl border border-pink-200 bg-white px-5 py-2.5 text-sm font-semibold text-pink-600 transition hover:bg-pink-50"
           >
             Daftar Member
           </Link>
@@ -82,18 +84,58 @@ export default function Navbar() {
             href="https://wa.me/6281314720307?text=Halo%20Salad%20Buah%20Senja,%20saya%20ingin%20memesan."
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-2xl bg-gradient-to-r from-pink-500 to-pink-600 px-6 py-3 font-bold text-white shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
+            className="rounded-xl bg-gradient-to-r from-pink-500 to-pink-600 px-6 py-2.5 text-sm font-bold text-white shadow-md transition duration-300 hover:-translate-y-0.5 hover:shadow-lg"
           >
             Pesan Sekarang
           </a>
-
         </div>
 
-        {/* Mobile */}
-        <button className="lg:hidden rounded-xl border border-pink-200 p-3">
-          ☰
+        {/* MOBILE BUTTON */}
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+          aria-label={open ? "Tutup menu" : "Buka menu"}
+          className="flex h-11 w-11 items-center justify-center rounded-xl border border-pink-200 bg-white text-xl text-pink-600 shadow-sm lg:hidden"
+        >
+          {open ? "✕" : "☰"}
         </button>
 
+        {/* MOBILE MENU */}
+        {open && (
+          <div className="absolute left-4 right-4 top-[82px] rounded-2xl border border-pink-100 bg-white p-4 shadow-2xl lg:hidden">
+            <nav className="flex flex-col">
+              {menus.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className="rounded-xl px-4 py-3 font-semibold text-gray-700 transition hover:bg-pink-50 hover:text-pink-600"
+                >
+                  {item.name}
+                </Link>
+              ))}
+
+              <div className="mt-3 border-t border-pink-100 pt-3">
+                <Link
+                  href="/member/register"
+                  onClick={() => setOpen(false)}
+                  className="mb-2 block rounded-xl border border-pink-200 px-4 py-3 text-center font-semibold text-pink-600"
+                >
+                  Daftar Member
+                </Link>
+
+                <a
+                  href="https://wa.me/6281314720307?text=Halo%20Salad%20Buah%20Senja,%20saya%20ingin%20memesan."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block rounded-xl bg-gradient-to-r from-pink-500 to-pink-600 px-4 py-3 text-center font-bold text-white"
+                >
+                  Pesan Sekarang
+                </a>
+              </div>
+            </nav>
+          </div>
+        )}
       </Container>
     </header>
   );

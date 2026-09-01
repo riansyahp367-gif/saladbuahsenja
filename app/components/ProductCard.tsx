@@ -1,13 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import { Star, Gift, Package, Sparkles, Clock3 } from "lucide-react";
 
-import ProductSizeSelector from "./product/ProductSizeSelector";
-import WhatsAppButton from "./product/WhatsAppButton";
-
-type Size = {
+type ProductSize = {
   id: string;
   label: string;
   volume: string;
@@ -23,165 +18,148 @@ type Product = {
   badge: string;
   rating: number;
   description: string;
-  sizes: Size[];
-};
-
-type ProductCardProps = {
-  product: Product;
+  sizes: ProductSize[];
 };
 
 export default function ProductCard({
   product,
-}: ProductCardProps) {
-  const [activeSize, setActiveSize] = useState(0);
-
-  const selected = product.sizes[activeSize];
+}: {
+  product: Product;
+}) {
+  const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
 
   const formatPrice = (price: number) =>
-    new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-    }).format(price);
+    new Intl.NumberFormat("id-ID").format(price);
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-pink-100 bg-white shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+    <div className="overflow-hidden rounded-3xl border border-pink-100 bg-white shadow-lg transition duration-300 hover:-translate-y-1 hover:shadow-2xl">
 
-     {/* Image */}
-<div className="relative h-[340px] overflow-hidden bg-gradient-to-b from-pink-50 via-white to-pink-100">
+      {/* FOTO PRODUK */}
+      <div className="relative h-[250px] w-full overflow-hidden bg-pink-50">
 
-  <Image
-    src={selected.image}
-    alt={product.name}
-    fill
-    className="object-cover transition-all duration-700 hover:scale-110"
-  />
+        <img
+          src={selectedSize.image}
+          alt={product.name}
+          className="h-full w-full object-cover transition duration-500 hover:scale-105"
+        />
 
-  {/* Badge */}
-  <div className="absolute left-5 top-5 rounded-full bg-white/90 px-4 py-2 shadow-xl backdrop-blur-md">
-    <p className="text-sm font-bold text-pink-600">
-      {product.badge}
-    </p>
-  </div>
-
-  {/* Best Seller */}
-  <div className="absolute right-5 top-5 rounded-full bg-pink-600 px-4 py-2 text-xs font-bold text-white shadow-lg">
-    BEST SELLER
-  </div>
-
-</div>
-      {/* Content */}
-      <div className="p-6">
-
-        {/* Rating */}
-        <div className="mb-3 flex items-center gap-1">
-          <Star
-            size={18}
-            className="fill-yellow-400 text-yellow-400"
-          />
-
-          <span className="font-semibold">
-            {product.rating}
-          </span>
-
-          <span className="text-sm text-gray-500">
-            /5
-          </span>
+        {/* BADGE */}
+        <div className="absolute left-4 top-4 rounded-full bg-white px-4 py-2 text-xs font-semibold text-pink-600 shadow-md">
+          {product.badge}
         </div>
 
-        {/* Title */}
-        <h3 className="text-2xl font-bold text-gray-900">
+        <div className="absolute right-4 top-4 rounded-full bg-pink-600 px-4 py-2 text-xs font-bold text-white shadow-md">
+          BEST SELLER
+        </div>
+      </div>
+
+      {/* CONTENT */}
+      <div className="p-5">
+
+        {/* RATING */}
+        <div className="mb-2 text-sm">
+          <span className="text-yellow-500">★</span>{" "}
+          <span className="font-bold">{product.rating}</span>
+          <span className="text-gray-400"> /5</span>
+        </div>
+
+        {/* NAME */}
+        <h3 className="text-xl font-black text-gray-900">
           {product.name}
         </h3>
 
-        {/* Description */}
-        <p className="mt-3 text-gray-600 leading-relaxed">
+        {/* DESCRIPTION */}
+        <p className="mt-2 min-h-[55px] text-sm leading-6 text-gray-500">
           {product.description}
         </p>
 
-        {/* Size Selector */}
-        <ProductSizeSelector
-          sizes={product.sizes}
-          activeSize={activeSize}
-          onChange={setActiveSize}
-        />
+        {/* UKURAN */}
+        <div className="mt-5">
+          <p className="mb-2 text-xs font-bold text-gray-700">
+            Pilih Ukuran
+          </p>
 
-        {/* Package */}
-        <div className="mt-6 flex items-center justify-between rounded-2xl bg-pink-50 p-4">
+          <div className="flex flex-wrap gap-2">
 
-          <div className="flex items-center gap-3">
-
-            <Package
-              size={22}
-              className="text-pink-600"
-            />
-
-            <div>
-              <p className="text-xs text-gray-500">
-                Kemasan
-              </p>
-
-              <p className="font-semibold">
-                {selected.package}
-              </p>
-            </div>
+            {product.sizes.map((size) => (
+              <button
+                key={size.id}
+                onClick={() => setSelectedSize(size)}
+                className={`rounded-full border px-4 py-2 text-xs font-semibold transition ${
+                  selectedSize.id === size.id
+                    ? "border-pink-600 bg-pink-600 text-white"
+                    : "border-gray-200 bg-white text-gray-700 hover:border-pink-400"
+                }`}
+              >
+                {size.label}
+                <span className="ml-1 block text-[10px] opacity-80">
+                  {size.volume}
+                </span>
+              </button>
+            ))}
 
           </div>
+        </div>
 
-          <div className="flex items-center gap-3">
+        {/* PACKAGE + POINT */}
+        <div className="mt-5 flex items-center justify-between rounded-2xl bg-pink-50 p-4">
 
-            <Gift
-              size={22}
-              className="text-pink-600"
-            />
+          <div>
+            <p className="text-[10px] text-gray-500">
+              Kemasan
+            </p>
 
-            <div>
-              <p className="text-xs text-gray-500">
-                Reward
-              </p>
+            <p className="text-sm font-bold text-gray-800">
+              📦 {selectedSize.package}
+            </p>
+          </div>
 
-              <p className="font-semibold">
-                +{selected.points} Point
-              </p>
-            </div>
+          <div className="text-right">
+            <p className="text-[10px] text-gray-500">
+              Reward
+            </p>
 
+            <p className="text-sm font-bold text-pink-600">
+              🎁 +{selectedSize.points} Point
+            </p>
           </div>
 
         </div>
 
-       {/* Price */}
-<div className="mt-6 rounded-3xl bg-gradient-to-r from-pink-500 via-pink-600 to-pink-500 p-5 text-white shadow-xl">
+        {/* HARGA */}
+        <div className="mt-5 rounded-2xl bg-gradient-to-r from-pink-600 to-pink-500 p-5 text-white shadow-md">
 
-  <p className="text-sm font-medium text-pink-100">
-    Mulai dari
-  </p>
+          <p className="text-xs">
+            Mulai dari
+          </p>
 
-  <h4 className="mt-2 text-4xl font-black tracking-tight">
-    {formatPrice(selected.price)}
-  </h4>
+          <p className="mt-1 text-3xl font-black">
+            Rp {formatPrice(selectedSize.price)}
+          </p>
 
-</div>
+        </div>
 
-       {/* WhatsApp */}
-<div className="mt-8 space-y-3">
+        {/* FRESH */}
+        <div className="mt-4 rounded-xl bg-green-50 py-3 text-center text-xs font-semibold text-green-600">
+          🕒 Dibuat Fresh Setiap Hari
+        </div>
 
-  <div className="flex items-center justify-center gap-2 rounded-2xl bg-green-50 py-3 text-sm font-semibold text-green-700">
+        {/* ORDER */}
+        <button
+          onClick={() => {
+            const message = `Halo Salad Buah Senja 👋%0ASaya mau pesan:%0A%0A${product.name}%0AUkuran: ${selectedSize.label} (${selectedSize.volume})%0AHarga: Rp ${formatPrice(selectedSize.price)}`;
 
-    <Clock3 size={18} />
+            window.open(
+              `https://wa.me/6281314720307?text=${message}`,
+              "_blank"
+            );
+          }}
+          className="mt-3 w-full rounded-xl bg-pink-600 py-3 text-sm font-bold text-white transition hover:bg-pink-700"
+        >
+          🛍️ Pesan Sekarang
+        </button>
 
-    <span>Dibuat Fresh Setiap Hari</span>
-
-  </div>
-
-  <WhatsAppButton
-    productName={product.name}
-    size={`${selected.label} (${selected.volume})`}
-  />
-
-</div>
-
-</div>
-
-</div>
+      </div>
+    </div>
   );
 }
