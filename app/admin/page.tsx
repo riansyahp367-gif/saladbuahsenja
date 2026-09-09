@@ -13,6 +13,12 @@ type Transaction = {
   created_at: string;
 };
 
+type TopMember = {
+  member_code: string;
+  full_name: string;
+  points: number;
+};
+
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -20,8 +26,10 @@ export default function AdminDashboard() {
   const [totalMembers, setTotalMembers] = useState(0);
   const [totalEarn, setTotalEarn] = useState(0);
   const [totalRedeem, setTotalRedeem] = useState(0);
+  const [todayTransactions, setTodayTransactions] = useState(0);
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [topMembers, setTopMembers] = useState<TopMember[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -33,9 +41,6 @@ export default function AdminDashboard() {
     setRefreshing(true);
 
     try {
-      // =========================
-      // TOTAL MEMBER
-      // =========================
       const {
         count: memberCount,
         error: memberError,
@@ -50,25 +55,20 @@ export default function AdminDashboard() {
         throw new Error(memberError.message);
       }
 
-      // =========================
-      // SEMUA TRANSAKSI
-      // =========================
       const {
         data: allTransactions,
         error: transactionError,
       } = await supabase
         .from("member_point_transactions")
-        .select(
-          `
-            id,
-            member_code,
-            full_name,
-            transaction_type,
-            points,
-            description,
-            created_at
-          `
-        )
+        .select(`
+          id,
+          member_code,
+          full_name,
+          transaction_type,
+          points,
+          description,
+          created_at
+        `)
         .order("created_at", {
           ascending: false,
         });
@@ -79,13 +79,8 @@ export default function AdminDashboard() {
 
       const rows = (allTransactions || []) as Transaction[];
 
-      // =========================
-      // HITUNG TOTAL POIN
-      // =========================
       const earn = rows
-        .filter(
-          (item) => item.transaction_type === "earn"
-        )
+        .filter((item) => item.transaction_type === "earn")
         .reduce(
           (total, item) =>
             total + Number(item.points || 0),
@@ -93,31 +88,60 @@ export default function AdminDashboard() {
         );
 
       const redeem = rows
-        .filter(
-          (item) =>
-            item.transaction_type === "redeem"
-        )
+        .filter((item) => item.transaction_type === "redeem")
         .reduce(
           (total, item) =>
-            total +
-            Math.abs(Number(item.points || 0)),
+            total + Math.abs(Number(item.points || 0)),
           0
         );
 
-      // =========================
-      // SIMPAN DATA
-      // =========================
+      const today = new Date();
+
+      const todayCount = rows.filter((item) => {
+        const date = new Date(item.created_at);
+
+        return (
+          date.getDate() === today.getDate() &&
+          date.getMonth() === today.getMonth() &&
+          date.getFullYear() === today.getFullYear()
+        );
+      }).length;
+
+      const memberPoints: Record<string, TopMember> = {};
+
+      rows.forEach((item) => {
+        const code = item.member_code;
+
+        if (!memberPoints[code]) {
+          memberPoints[code] = {
+            member_code: code,
+            full_name: item.full_name || "Member",
+            points: 0,
+          };
+        }
+
+        const point = Number(item.points || 0);
+
+        if (item.transaction_type === "earn") {
+          memberPoints[code].points += point;
+        } else if (item.transaction_type === "redeem") {
+          memberPoints[code].points -= Math.abs(point);
+        }
+      });
+
+      const topMemberList = Object.values(memberPoints)
+        .sort((a, b) => b.points - a.points)
+        .slice(0, 5);
+
       setTotalMembers(memberCount || 0);
       setTotalEarn(earn);
       setTotalRedeem(redeem);
+      setTodayTransactions(todayCount);
 
-      // Hanya tampilkan 10 transaksi terbaru
       setTransactions(rows.slice(0, 10));
+      setTopMembers(topMemberList);
     } catch (error) {
-      console.error(
-        "Gagal memuat dashboard admin:",
-        error
-      );
+      console.error("Gagal memuat dashboard admin:", error);
 
       setErrorMessage(
         error instanceof Error
@@ -126,6 +150,7 @@ export default function AdminDashboard() {
       );
 
       setTransactions([]);
+      setTopMembers([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -134,14 +159,13 @@ export default function AdminDashboard() {
 
   async function handleLogout() {
     await supabase.auth.signOut();
-
     window.location.href = "/staff/login";
   }
 
   function formatDate(date: string) {
     return new Date(date).toLocaleString("id-ID", {
       day: "2-digit",
-      month: "2-digit",
+      month: "short",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
@@ -150,16 +174,16 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-pink-50">
-        <div className="rounded-3xl bg-white px-10 py-8 text-center shadow-lg">
-          <div className="text-4xl">🍓</div>
+      <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-pink-50 via-white to-pink-100">
+        <div className="rounded-3xl bg-white px-12 py-10 text-center shadow-xl">
+          <div className="animate-bounce text-5xl">🍓</div>
 
-          <p className="mt-4 font-bold text-gray-800">
-            Memuat Dashboard Admin...
-          </p>
+          <h2 className="mt-5 text-xl font-extrabold text-gray-900">
+            Memuat Dashboard...
+          </h2>
 
-          <p className="mt-1 text-sm text-gray-500">
-            Tunggu sebentar bro...
+          <p className="mt-2 text-sm text-gray-500">
+            Mengambil data Salad Buah Senja
           </p>
         </div>
       </main>
@@ -167,52 +191,59 @@ export default function AdminDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-pink-50">
-
-      {/* ================= HEADER ================= */}
-      <header className="border-b border-pink-100 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-
+    <main className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-pink-100">
+      
+      {/* HEADER */}
+      <header className="border-b border-pink-100 bg-white shadow-sm">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-6">
+          
           <div>
-            <h1 className="text-2xl font-extrabold text-gray-900">
-              🍓 Salad Buah Senja
+            <h1 className="text-xl font-extrabold text-gray-900 md:text-2xl">
+              🍓 Salad Buah{" "}
+              <span className="text-pink-600">Senja</span>
             </h1>
 
-            <p className="text-sm text-gray-500">
+            <p className="text-xs text-gray-500 md:text-sm">
               Dashboard Admin
             </p>
           </div>
 
-          <button
-            onClick={handleLogout}
-            className="rounded-xl bg-gray-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-gray-800"
-          >
-            Logout
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={loadDashboard}
+              disabled={refreshing}
+              className="rounded-xl bg-pink-100 px-4 py-2 text-sm font-bold text-pink-600 transition hover:bg-pink-200 disabled:opacity-50"
+            >
+              🔄
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="rounded-xl bg-gray-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-gray-800"
+            >
+              Logout
+            </button>
+          </div>
 
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-6 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 md:px-6">
 
-        {/* ================= TITLE ================= */}
+        {/* TITLE */}
         <div className="mb-8">
-
           <h2 className="text-3xl font-extrabold text-gray-900">
             📊 Dashboard Admin
           </h2>
 
-          <p className="mt-1 text-gray-500">
-            Pantau aktivitas member dan sistem poin
-            Salad Buah Senja.
+          <p className="mt-2 text-gray-500">
+            Pantau member, poin, dan aktivitas Salad Buah Senja 🍓
           </p>
-
         </div>
 
-        {/* ================= ERROR ================= */}
+        {/* ERROR */}
         {errorMessage && (
           <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 p-5">
-
             <p className="font-bold text-red-700">
               ❌ Gagal mengambil data
             </p>
@@ -227,159 +258,185 @@ export default function AdminDashboard() {
             >
               Coba Lagi
             </button>
-
           </div>
         )}
 
-        {/* ================= STATISTICS ================= */}
-        <div className="grid gap-5 md:grid-cols-3">
+        {/* STATISTICS */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          
+          <StatCard
+            icon="👥"
+            title="Total Member"
+            value={totalMembers}
+            color="text-pink-600"
+          />
 
-          {/* MEMBER */}
-          <div className="rounded-3xl bg-white p-6 shadow-lg">
+          <StatCard
+            icon="⭐"
+            title="Poin Ditambahkan"
+            value={totalEarn}
+            color="text-green-600"
+          />
 
-            <div className="text-4xl">
-              👥
-            </div>
+          <StatCard
+            icon="🎁"
+            title="Poin Ditukar"
+            value={totalRedeem}
+            color="text-orange-500"
+          />
 
-            <p className="mt-4 text-sm text-gray-500">
-              Total Member
+          <div className="rounded-3xl bg-gradient-to-br from-pink-500 to-pink-700 p-6 text-white shadow-lg">
+            <div className="text-4xl">📅</div>
+
+            <p className="mt-4 text-sm text-pink-100">
+              Transaksi Hari Ini
             </p>
 
-            <p className="mt-1 text-3xl font-extrabold text-pink-600">
-              {totalMembers}
+            <p className="mt-1 text-3xl font-extrabold">
+              {todayTransactions}
             </p>
-
-          </div>
-
-          {/* EARN */}
-          <div className="rounded-3xl bg-white p-6 shadow-lg">
-
-            <div className="text-4xl">
-              ⭐
-            </div>
-
-            <p className="mt-4 text-sm text-gray-500">
-              Total Poin Ditambahkan
-            </p>
-
-            <p className="mt-1 text-3xl font-extrabold text-pink-600">
-              {totalEarn}
-            </p>
-
-          </div>
-
-          {/* REDEEM */}
-          <div className="rounded-3xl bg-white p-6 shadow-lg">
-
-            <div className="text-4xl">
-              🎁
-            </div>
-
-            <p className="mt-4 text-sm text-gray-500">
-              Total Poin Ditukar
-            </p>
-
-            <p className="mt-1 text-3xl font-extrabold text-pink-600">
-              {totalRedeem}
-            </p>
-
           </div>
 
         </div>
 
-        {/* ================= MENU ADMIN ================= */}
-        <div className="mt-8 rounded-3xl bg-white p-6 shadow-lg">
+        {/* MENU ADMIN */}
+        <section className="mt-8 rounded-3xl bg-white p-6 shadow-lg">
+          <h3 className="text-xl font-extrabold text-gray-900">
+            ⚡ Menu Admin
+          </h3>
 
-          <div className="flex items-center justify-between">
+          <p className="mt-1 text-sm text-gray-500">
+            Kelola sistem member dengan cepat.
+          </p>
 
-            <h3 className="text-xl font-extrabold text-gray-900">
-              ⚡ Menu Admin
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            
+            <AdminMenu
+              href="/admin/members"
+              icon="👥"
+              title="Data Member"
+              description="Lihat seluruh data member."
+            />
+
+            <AdminMenu
+              href="/admin/history"
+              icon="📋"
+              title="Riwayat Transaksi"
+              description="Lihat semua aktivitas poin."
+            />
+
+            <AdminMenu
+              href="/staff"
+              icon="💳"
+              title="Dashboard Kasir"
+              description="Kembali ke dashboard kasir."
+            />
+
+          </div>
+        </section>
+
+        {/* TOP MEMBER */}
+        <div className="mt-8 grid gap-8 lg:grid-cols-2">
+          
+          <section className="rounded-3xl bg-white p-6 shadow-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-extrabold text-gray-900">
+                  🏆 Top Member
+                </h3>
+
+                <p className="mt-1 text-sm text-gray-500">
+                  Member dengan poin tertinggi.
+                </p>
+              </div>
+
+              <div className="text-3xl">🥇</div>
+            </div>
+
+            <div className="mt-6 space-y-3">
+              {topMembers.length === 0 ? (
+                <div className="rounded-2xl bg-pink-50 p-8 text-center">
+                  <div className="text-4xl">📭</div>
+
+                  <p className="mt-3 text-sm text-gray-500">
+                    Belum ada data poin member.
+                  </p>
+                </div>
+              ) : (
+                topMembers.map((member, index) => (
+                  <div
+                    key={member.member_code}
+                    className="flex items-center justify-between rounded-2xl bg-pink-50 p-4"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white font-extrabold text-pink-600 shadow-sm">
+                        #{index + 1}
+                      </div>
+
+                      <div>
+                        <p className="font-bold text-gray-900">
+                          {member.full_name}
+                        </p>
+
+                        <p className="text-xs font-semibold text-gray-500">
+                          {member.member_code}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <p className="font-extrabold text-pink-600">
+                        ⭐ {member.points}
+                      </p>
+
+                      <p className="text-xs text-gray-500">
+                        POINT
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
+
+          {/* RINGKASAN */}
+          <section className="rounded-3xl bg-gradient-to-br from-pink-600 to-pink-800 p-6 text-white shadow-lg">
+            <div className="text-4xl">🍓</div>
+
+            <h3 className="mt-4 text-2xl font-extrabold">
+              Salad Buah Senja
             </h3>
 
-          </div>
+            <p className="mt-2 text-pink-100">
+              Sistem Member & Loyalty Point
+            </p>
 
-          <div className="mt-5 grid gap-4 md:grid-cols-3">
+            <div className="mt-8 space-y-4">
+              
+              <SummaryRow
+                label="👥 Member"
+                value={totalMembers}
+              />
 
-            {/* DATA MEMBER */}
-            <a
-              href="/admin/members"
-              className="rounded-2xl bg-pink-50 p-5 transition hover:bg-pink-100"
-            >
+              <SummaryRow
+                label="⭐ Total Poin Masuk"
+                value={totalEarn}
+              />
 
-              <div className="text-3xl">
-                👥
-              </div>
+              <SummaryRow
+                label="🎁 Poin Ditukar"
+                value={totalRedeem}
+              />
 
-              <h4 className="mt-3 font-bold text-gray-900">
-                Data Member
-              </h4>
+            </div>
+          </section>
 
-              <p className="mt-1 text-sm text-gray-500">
-                Lihat seluruh data member.
-              </p>
-
-              <p className="mt-4 font-bold text-pink-600">
-                Buka →
-              </p>
-
-            </a>
-
-            {/* HISTORY */}
-            <a
-              href="/admin/history"
-              className="rounded-2xl bg-pink-50 p-5 transition hover:bg-pink-100"
-            >
-
-              <div className="text-3xl">
-                📋
-              </div>
-
-              <h4 className="mt-3 font-bold text-gray-900">
-                Riwayat Transaksi
-              </h4>
-
-              <p className="mt-1 text-sm text-gray-500">
-                Lihat seluruh aktivitas poin.
-              </p>
-
-              <p className="mt-4 font-bold text-pink-600">
-                Buka →
-              </p>
-
-            </a>
-
-            {/* KASIR */}
-            <a
-              href="/staff"
-              className="rounded-2xl bg-pink-50 p-5 transition hover:bg-pink-100"
-            >
-
-              <div className="text-3xl">
-                💳
-              </div>
-
-              <h4 className="mt-3 font-bold text-gray-900">
-                Dashboard Kasir
-              </h4>
-
-              <p className="mt-1 text-sm text-gray-500">
-                Kembali ke dashboard kasir.
-              </p>
-
-              <p className="mt-4 font-bold text-pink-600">
-                Buka →
-              </p>
-
-            </a>
-
-          </div>
         </div>
 
-        {/* ================= TRANSACTIONS ================= */}
-        <div className="mt-8 rounded-3xl bg-white p-6 shadow-lg">
-
-          <div className="flex items-center justify-between">
-
+        {/* TRANSAKSI */}
+        <section className="mt-8 rounded-3xl bg-white p-6 shadow-lg">
+          
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h3 className="text-xl font-extrabold text-gray-900">
                 📋 Transaksi Terbaru
@@ -393,69 +450,39 @@ export default function AdminDashboard() {
             <button
               onClick={loadDashboard}
               disabled={refreshing}
-              className="rounded-xl bg-pink-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-pink-700 disabled:opacity-50"
+              className="rounded-xl bg-pink-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-pink-700 disabled:opacity-50"
             >
-              {refreshing
-                ? "Memuat..."
-                : "🔄 Refresh"}
+              {refreshing ? "Memuat..." : "🔄 Refresh Data"}
             </button>
-
           </div>
 
-          <div className="mt-5 overflow-x-auto">
-
+          <div className="mt-6 overflow-x-auto">
             {transactions.length === 0 ? (
+              <div className="rounded-2xl bg-pink-50 p-12 text-center">
+                <div className="text-5xl">📭</div>
 
-              <div className="rounded-2xl bg-pink-50 p-10 text-center">
-
-                <div className="text-5xl">
-                  📭
-                </div>
-
-                <p className="mt-3 font-bold text-gray-800">
+                <h4 className="mt-4 font-bold text-gray-800">
                   Belum ada transaksi
-                </p>
+                </h4>
 
                 <p className="mt-1 text-sm text-gray-500">
-                  Transaksi poin member akan muncul di sini.
+                  Aktivitas poin member akan muncul di sini.
                 </p>
-
               </div>
-
             ) : (
-
               <table className="w-full min-w-[750px] text-left text-sm">
-
                 <thead>
-                  <tr className="border-b border-pink-100">
-
-                    <th className="px-4 py-3 font-bold">
-                      Tanggal
-                    </th>
-
-                    <th className="px-4 py-3 font-bold">
-                      Member
-                    </th>
-
-                    <th className="px-4 py-3 font-bold">
-                      Aktivitas
-                    </th>
-
-                    <th className="px-4 py-3 font-bold">
-                      Poin
-                    </th>
-
-                    <th className="px-4 py-3 font-bold">
-                      Keterangan
-                    </th>
-
+                  <tr className="border-b border-pink-100 text-gray-500">
+                    <th className="px-4 py-4 font-bold">Tanggal</th>
+                    <th className="px-4 py-4 font-bold">Member</th>
+                    <th className="px-4 py-4 font-bold">Aktivitas</th>
+                    <th className="px-4 py-4 font-bold">Poin</th>
+                    <th className="px-4 py-4 font-bold">Keterangan</th>
                   </tr>
                 </thead>
 
                 <tbody>
-
                   {transactions.map((item, index) => {
-
                     const isEarn =
                       item.transaction_type === "earn";
 
@@ -465,85 +492,143 @@ export default function AdminDashboard() {
                           item.id ||
                           `${item.member_code}-${item.created_at}-${index}`
                         }
-                        className="border-b border-gray-100 last:border-0 hover:bg-pink-50/50"
+                        className="border-b border-gray-100 transition hover:bg-pink-50"
                       >
-
-                        {/* DATE */}
                         <td className="px-4 py-4 text-gray-500">
                           {formatDate(item.created_at)}
                         </td>
 
-                        {/* MEMBER */}
                         <td className="px-4 py-4">
-
-                          <div className="font-bold text-gray-900">
+                          <p className="font-bold text-gray-900">
                             {item.full_name}
-                          </div>
+                          </p>
 
-                          <div className="mt-1 text-xs font-semibold text-pink-600">
+                          <p className="mt-1 text-xs font-semibold text-pink-600">
                             {item.member_code}
-                          </div>
-
+                          </p>
                         </td>
 
-                        {/* ACTIVITY */}
                         <td className="px-4 py-4">
-
                           {isEarn ? (
-
-                            <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">
-                              Tambah Poin
+                            <span className="rounded-full bg-green-100 px-3 py-2 text-xs font-bold text-green-700">
+                              ⭐ Tambah Poin
                             </span>
-
                           ) : (
-
-                            <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-600">
-                              Tukar Poin
+                            <span className="rounded-full bg-red-100 px-3 py-2 text-xs font-bold text-red-600">
+                              🎁 Tukar Poin
                             </span>
-
                           )}
-
                         </td>
 
-                        {/* POINT */}
                         <td className="px-4 py-4">
-
                           <span
-                            className={`font-extrabold ${
+                            className={`text-base font-extrabold ${
                               isEarn
                                 ? "text-green-600"
                                 : "text-red-600"
                             }`}
                           >
                             {isEarn ? "+" : "-"}
-                            {Math.abs(
-                              Number(item.points || 0)
-                            )}
+                            {Math.abs(Number(item.points || 0))}
                           </span>
-
                         </td>
 
-                        {/* DESCRIPTION */}
                         <td className="px-4 py-4 text-gray-600">
-                          {item.description}
+                          {item.description || "-"}
                         </td>
-
                       </tr>
                     );
                   })}
-
                 </tbody>
-
               </table>
-
             )}
-
           </div>
+        </section>
 
-        </div>
+        <footer className="py-10 text-center text-sm text-gray-400">
+          🍓 Salad Buah Senja — Sistem Member & Loyalty Point
+        </footer>
 
       </div>
-
     </main>
+  );
+}
+
+function StatCard({
+  icon,
+  title,
+  value,
+  color,
+}: {
+  icon: string;
+  title: string;
+  value: number;
+  color: string;
+}) {
+  return (
+    <div className="rounded-3xl bg-white p-6 shadow-lg transition hover:-translate-y-1">
+      <div className="text-4xl">{icon}</div>
+
+      <p className="mt-4 text-sm text-gray-500">
+        {title}
+      </p>
+
+      <p className={`mt-1 text-3xl font-extrabold ${color}`}>
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function AdminMenu({
+  href,
+  icon,
+  title,
+  description,
+}: {
+  href: string;
+  icon: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <a
+      href={href}
+      className="rounded-2xl bg-pink-50 p-5 transition hover:bg-pink-100 hover:shadow-md"
+    >
+      <div className="text-4xl">{icon}</div>
+
+      <h4 className="mt-4 font-bold text-gray-900">
+        {title}
+      </h4>
+
+      <p className="mt-1 text-sm text-gray-500">
+        {description}
+      </p>
+
+      <p className="mt-4 font-bold text-pink-600">
+        Buka →
+      </p>
+    </a>
+  );
+}
+
+function SummaryRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: number;
+}) {
+  return (
+    <div className="flex items-center justify-between rounded-2xl bg-white/15 p-4">
+      <span className="text-pink-100">
+        {label}
+      </span>
+
+      <span className="text-xl font-extrabold">
+        {value}
+      </span>
+    </div>
   );
 }

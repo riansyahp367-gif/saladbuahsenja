@@ -6,10 +6,13 @@ import { supabase } from "@/lib/supabase";
 export default function StaffLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (
+    e: React.FormEvent
+  ) => {
     e.preventDefault();
 
     if (loading) return;
@@ -20,40 +23,103 @@ export default function StaffLoginPage() {
     const cleanEmail = email.trim();
 
     if (!cleanEmail || !password) {
+      setErrorMessage(
+        "Email dan password wajib diisi."
+      );
+
       setLoading(false);
-      setErrorMessage("Email dan password wajib diisi.");
       return;
     }
 
     try {
-      const { data, error } =
-        await supabase.auth.signInWithPassword({
-          email: cleanEmail,
-          password,
-        });
-
-      console.log("LOGIN DATA:", data);
-      console.log("LOGIN ERROR:", error);
+      // =========================
+      // LOGIN SUPABASE
+      // =========================
+      const {
+        data,
+        error,
+      } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password,
+      });
 
       if (error) {
         setErrorMessage(
-          error.message || "Email atau password salah."
+          "Email atau password salah."
         );
+
         setLoading(false);
         return;
       }
 
       if (!data.user) {
-        setErrorMessage("Login gagal. User tidak ditemukan.");
+        setErrorMessage(
+          "Login gagal. User tidak ditemukan."
+        );
+
         setLoading(false);
         return;
       }
 
-      // Login berhasil
-      window.location.replace("/staff");
+      // =========================
+      // CEK ROLE USER
+      // =========================
+      const {
+        data: userRole,
+        error: roleError,
+      } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("id", data.user.id)
+        .single();
+
+      if (roleError || !userRole) {
+        await supabase.auth.signOut();
+
+        setErrorMessage(
+          "Akun ini belum memiliki akses sistem."
+        );
+
+        setLoading(false);
+        return;
+      }
+
+      // =========================
+      // ADMIN
+      // =========================
+      if (userRole.role === "admin") {
+        window.location.replace(
+          "/admin/dashboard"
+        );
+
+        return;
+      }
+
+      // =========================
+      // STAFF / KASIR
+      // =========================
+      if (userRole.role === "staff") {
+        window.location.replace("/staff");
+
+        return;
+      }
+
+      // =========================
+      // ROLE TIDAK DIKENAL
+      // =========================
+      await supabase.auth.signOut();
+
+      setErrorMessage(
+        "Role akun tidak memiliki akses."
+      );
+
+      setLoading(false);
 
     } catch (err) {
-      console.error("LOGIN EXCEPTION:", err);
+      console.error(
+        "LOGIN EXCEPTION:",
+        err
+      );
 
       setErrorMessage(
         "Terjadi kesalahan saat login. Silakan coba lagi."
@@ -64,26 +130,32 @@ export default function StaffLoginPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-pink-50 px-6">
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-pink-50 via-white to-pink-100 px-6">
 
       <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl">
 
+        {/* HEADER */}
         <div className="text-center">
 
           <div className="text-5xl">
-            🔐
+            🍓
           </div>
 
           <h1 className="mt-4 text-3xl font-extrabold text-gray-900">
-            Login Kasir
+            Login{" "}
+
+            <span className="text-pink-600">
+              Salad Buah Senja
+            </span>
           </h1>
 
           <p className="mt-2 text-gray-500">
-            Masuk untuk mengelola poin member.
+            Masuk ke sistem kasir dan admin.
           </p>
 
         </div>
 
+        {/* FORM */}
         <form
           onSubmit={handleLogin}
           className="mt-8 space-y-5"
@@ -99,7 +171,9 @@ export default function StaffLoginPage() {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) =>
+                setEmail(e.target.value)
+              }
               placeholder="Masukkan email"
               autoComplete="email"
               required
@@ -119,7 +193,9 @@ export default function StaffLoginPage() {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) =>
+                setPassword(e.target.value)
+              }
               placeholder="Masukkan password"
               autoComplete="current-password"
               required
@@ -131,21 +207,35 @@ export default function StaffLoginPage() {
 
           {/* ERROR */}
           {errorMessage && (
+
             <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-center font-medium text-red-600">
+
               ❌ {errorMessage}
+
             </div>
+
           )}
 
           {/* BUTTON */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-2xl bg-pink-600 py-4 font-bold text-white transition hover:bg-pink-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-2xl bg-gradient-to-r from-pink-600 to-pink-700 py-4 font-bold text-white shadow-lg transition hover:scale-[1.02] hover:from-pink-700 hover:to-pink-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading ? "Memproses..." : "Login Kasir"}
+
+            {loading
+              ? "Memproses..."
+              : "🔐 Masuk Sistem"}
+
           </button>
 
         </form>
+
+        <p className="mt-6 text-center text-xs text-gray-400">
+          🍓 Salad Buah Senja
+          <br />
+          Sistem Member & Loyalty Point
+        </p>
 
       </div>
 
