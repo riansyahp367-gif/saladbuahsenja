@@ -1,42 +1,32 @@
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = "https://saladbuahsenja-web.vercel.app";
+
   return [
     {
-      url: "http://localhost:3000/",
+      url: `${baseUrl}/`,
       lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 1,
     },
     {
-      url: "http://localhost:3000/menu",
+      url: `${baseUrl}/menu`,
       lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
     },
     {
-      url: "http://localhost:3000/promo",
+      url: `${baseUrl}/promo`,
       lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
     },
     {
-      url: "http://localhost:3000/member",
+      url: `${baseUrl}/cabang`,
       lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
     },
     {
-      url: "http://localhost:3000/cabang",
+      url: `${baseUrl}/member`,
       lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
     },
     {
-      url: "http://localhost:3000/contact",
+      url: `${baseUrl}/contact`,
       lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.6,
     },
   ];
 }
