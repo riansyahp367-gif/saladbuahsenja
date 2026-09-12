@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+const siteUrl = "https://saladbuahsenja-web.vercel.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+
   title: {
     default: "Salad Buah Senja | Salad Buah Premium Palembang",
     template: "%s | Salad Buah Senja",
   },
 
   description:
-    "Salad Buah Senja menyediakan salad buah premium dengan buah pilihan dan saus creamy yang lezat. Pesan salad buah enak dan segar di Palembang.",
+    "Salad Buah Senja menyediakan salad buah premium dengan buah pilihan, saus creamy premium, keju, dan topping buah segar. Pesan salad buah enak dan segar di Palembang.",
 
   keywords: [
     "salad buah palembang",
@@ -28,22 +32,45 @@ export const metadata: Metadata = {
   ],
 
   creator: "Salad Buah Senja",
+  publisher: "Salad Buah Senja",
 
-  metadataBase: new URL("https://saladbuahsenja-web.vercel.app"),
+  alternates: {
+    canonical: "/",
+  },
 
   openGraph: {
     title: "Salad Buah Senja | Salad Buah Premium Palembang",
+
     description:
-      "Nikmati salad buah premium dengan buah pilihan dan saus creamy yang lezat dari Salad Buah Senja.",
-    url: "https://saladbuahsenja-web.vercel.app",
+      "Nikmati salad buah premium dengan buah pilihan, saus creamy premium, keju, dan topping buah segar dari Salad Buah Senja.",
+
+    url: siteUrl,
     siteName: "Salad Buah Senja",
     locale: "id_ID",
     type: "website",
   },
 
+  twitter: {
+    card: "summary_large_image",
+    title: "Salad Buah Senja | Salad Buah Premium Palembang",
+    description:
+      "Salad buah premium dengan buah segar dan saus creamy premium di Palembang.",
+  },
+
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+
+  verification: {
+    google: "nPsntuosfxTO7qQhjYzKftYl5nKPOZZGZYXwQ7QCaCc",
   },
 };
 
