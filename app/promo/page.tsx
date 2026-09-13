@@ -1,5 +1,30 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/home/Footer";
+
+export const metadata: Metadata = {
+  title: "Promo Salad Buah Palembang",
+  description:
+    "Dapatkan promo Salad Buah Senja di Palembang. Nikmati promo member, bundling salad buah, promo ulang tahun, dan berbagai keuntungan menarik setiap kali berbelanja.",
+  alternates: {
+    canonical: "/promo",
+  },
+  openGraph: {
+    title: "Promo Salad Buah Senja | Promo Salad Buah Palembang",
+    description:
+      "Nikmati berbagai promo menarik Salad Buah Senja di Palembang, mulai dari promo member, bundling hingga promo ulang tahun.",
+    url: "/promo",
+    siteName: "Salad Buah Senja",
+    locale: "id_ID",
+    type: "website",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 const promos = [
   {
@@ -28,32 +53,52 @@ export default function PromoPage() {
       <Navbar />
 
       <main className="min-h-screen bg-pink-50">
-
-        {/* Hero */}
-        <section className="bg-gradient-to-r from-pink-500 to-pink-600 py-20 text-center text-white">
-          <h1 className="text-5xl font-extrabold">
+        {/* HERO */}
+        <section
+          aria-labelledby="promo-heading"
+          className="bg-gradient-to-r from-pink-500 to-pink-600 py-20 text-center text-white"
+        >
+          <h1
+            id="promo-heading"
+            className="text-5xl font-extrabold"
+          >
             Promo Salad Buah Senja
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-lg">
-            Nikmati berbagai promo menarik dan jangan lewatkan kesempatan
-            mendapatkan keuntungan lebih setiap kali berbelanja.
+          <p className="mx-auto mt-6 max-w-2xl px-6 text-lg">
+            Nikmati promo salad buah menarik di Palembang dan dapatkan
+            keuntungan lebih setiap kali berbelanja di Salad Buah Senja.
           </p>
         </section>
 
-        {/* Promo Card */}
-        <section className="mx-auto max-w-6xl px-6 py-16">
+        {/* PROMO CARDS */}
+        <section
+          aria-labelledby="promo-list-heading"
+          className="mx-auto max-w-6xl px-6 py-16"
+        >
+          <div className="mb-12 text-center">
+            <h2
+              id="promo-list-heading"
+              className="text-3xl font-extrabold text-gray-900"
+            >
+              Promo Terbaru Salad Buah Senja
+            </h2>
+
+            <p className="mx-auto mt-3 max-w-2xl text-gray-500">
+              Pilih promo favoritmu dan nikmati salad buah premium dengan
+              penawaran yang lebih hemat.
+            </p>
+          </div>
 
           <div className="grid gap-8 md:grid-cols-3">
-
             {promos.map((promo) => (
-              <div
+              <article
                 key={promo.title}
                 className="rounded-3xl bg-white p-8 shadow-lg transition hover:-translate-y-2 hover:shadow-xl"
               >
-                <h2 className="text-2xl font-bold text-pink-600">
+                <h3 className="text-2xl font-bold text-pink-600">
                   {promo.title}
-                </h2>
+                </h3>
 
                 <p className="mt-5 leading-7 text-gray-600">
                   {promo.description}
@@ -71,13 +116,47 @@ export default function PromoPage() {
                 >
                   Klaim Promo
                 </a>
-              </div>
+              </article>
             ))}
-
           </div>
-
         </section>
 
+        {/* CTA */}
+        <section className="px-6 pb-20">
+          <div className="mx-auto max-w-4xl rounded-3xl bg-white p-8 text-center shadow-sm md:p-12">
+            <h2 className="text-3xl font-extrabold text-gray-900">
+              Siap Nikmati Salad Buah Senja?
+            </h2>
+
+            <p className="mx-auto mt-4 max-w-2xl text-gray-500">
+              Lihat menu lengkap kami atau temukan cabang Salad Buah Senja
+              terdekat di Palembang.
+            </p>
+
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <Link
+                href="/menu"
+                className="rounded-xl bg-gradient-to-r from-pink-500 to-pink-600 px-7 py-3 font-bold text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg"
+              >
+                Lihat Menu
+              </Link>
+
+              <Link
+                href="/cabang"
+                className="rounded-xl border border-pink-200 bg-white px-7 py-3 font-bold text-pink-600 transition hover:bg-pink-50"
+              >
+                Lihat Cabang
+              </Link>
+
+              <Link
+                href="/member"
+                className="rounded-xl border border-pink-200 bg-white px-7 py-3 font-bold text-pink-600 transition hover:bg-pink-50"
+              >
+                Program Member
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />
