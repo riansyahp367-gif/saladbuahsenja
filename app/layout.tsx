@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import LocalBusinessSchema from "./components/seo/LocalBusinessSchema";
 
 const siteUrl = "https://saladbuahsenja-web.vercel.app";
 
@@ -40,10 +41,8 @@ export const metadata: Metadata = {
 
   openGraph: {
     title: "Salad Buah Senja | Salad Buah Premium Palembang",
-
     description:
       "Nikmati salad buah premium dengan buah pilihan, saus creamy premium, keju, dan topping buah segar dari Salad Buah Senja.",
-
     url: siteUrl,
     siteName: "Salad Buah Senja",
     locale: "id_ID",
@@ -81,7 +80,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id">
-      <body>{children}</body>
+      <body>
+        <LocalBusinessSchema />
+        {children}
+      </body>
     </html>
   );
 }
